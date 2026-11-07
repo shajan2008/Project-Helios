@@ -1,0 +1,12 @@
+package edu.srmist.od;
+import java.security.MessageDigest;import java.util.Base64;import javax.crypto.Mac;import javax.crypto.spec.SecretKeySpec;
+import org.springframework.beans.factory.annotation.*;import org.springframework.http.HttpStatus;import org.springframework.stereotype.Component;import org.springframework.web.server.ResponseStatusException;
+/** Minimal signed bearer token (HMAC-SHA256, 8h). Swap for Spring Security + JWT / SRM SSO when going live. */
+@Component public class Auth {
+ @Value("${app.secret}") String secret; @Autowired UserRepo users;
+ String mac(String s){try{Mac m=Mac.getInstance("HmacSHA256");m.init(new SecretKeySpec(secret.getBytes(),"HmacSHA256"));return Base64.getUrlEncoder().withoutPadding().encodeToString(m.doFinal(s.getBytes()));}catch(Exception e){throw new RuntimeException(e);}}
+ public String issue(String netid){String p=netid+"|"+(System.currentTimeMillis()+8*3600_000L);return Base64.getUrlEncoder().withoutPadding().encodeToString(p.getBytes())+"."+mac(p);}
+ public User user(String h){try{String[] t=h.substring(7).split("\\.");String p=new String(Base64.getUrlDecoder().decode(t[0]));
+  if(!MessageDigest.isEqual(mac(p).getBytes(),t[1].getBytes()))throw new Exception();String[] q=p.split("\\|");if(Long.parseLong(q[1])<System.currentTimeMillis())throw new Exception();
+  return users.findById(q[0]).orElseThrow();}catch(Exception e){throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Please sign in again");}}
+}
