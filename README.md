@@ -1,4 +1,4 @@
-# Project Bomb
+# Project Helios
 
 An internal full-stack software system built with a high-performance **Java Spring Boot** backend and a modular **React** frontend. 
 
