@@ -1,7 +1,7 @@
 # SRMIST OD Track (React + Spring Boot)
 
 ## Run
-Backend (Java 17, Maven):   cd backend && mvn spring-boot:run      -> http://localhost:8080
+Backend (Java 25 LTS, Maven):   cd backend && mvn spring-boot:run      -> http://localhost:8080
 Frontend (Node 18+):        cd frontend && npm install && npm run dev -> http://localhost:5173
 
 ## Demo logins (OTP 123456)
